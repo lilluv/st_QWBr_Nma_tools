@@ -44,11 +44,16 @@ class CBot:
         except:
             print('--Fail to login--')
                     
-    def crawler(self):
-        self.driver.get('https://platform.worldquantbrain.com/learn/data-and-operators/company-fundamental-data-for-equity')
+    def crawler(self, url: str=None, save_path: str=None):
+        if url:
+            self.driver.get(url)
+        else:
+            self.driver.get('https://platform.worldquantbrain.com/learn/data-and-operators/company-fundamental-data-for-equity')
         time.sleep(10) # Waiting for loading...
         rows = self.driver.find_elements('xpath', '//div[@class="rt-tr-group"]')
-        with open('Company Fundamental Data for Equity - Fundamental Datasets.csv', 'w') as f:
+        if save_path is None:
+            save_path = 'Company Fundamental Data for Equity - Fundamental Datasets.csv'
+        with open(save_path, 'w') as f:
             mywriter = csv.writer(f)
             for row in tqdm(rows):
                 row_data = []
