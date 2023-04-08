@@ -27,6 +27,6 @@ def generator(list_alpha, field_neutralization = 'industry'):
         list_processed_alpha.append(alpha)
 
     f_alpha = ','.join(list_processed_alpha)
-    print(f_alpha)
+    # print(f_alpha)
     return "add({0})".format(f_alpha)
 

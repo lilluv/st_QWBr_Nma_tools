@@ -39,7 +39,7 @@ class Simulate_API():
         #Login
         response = s.post("https://api.worldquantbrain.com/authentication")
         print("Response Login:" + str(response))
-        print(response.text)
+        # print(response.text)
         if response.status_code == requests.status_codes.codes.unauthorized:
             if response.headers["WWW-Authenticate"] == "persona":
                 input(
@@ -61,35 +61,42 @@ class Simulate_API():
         )
 
         print("Simulation response: " + str(simulation_response))
-        print(simulation_response.text)
+        # print(simulation_response.text)
 
         simulation_progress_url = simulation_response.headers["Location"]
         finished = False
 
         while True:
-            simulation_progress = self.session.get(simulation_progress_url)
-            if simulation_progress.headers.get("Retry-After", 0) == 0:
+            self.simulation_progress = self.session.get(simulation_progress_url)
+            if self.simulation_progress.headers.get("Retry-After", 0) == 0:
                 break
-            print("Sleeping for " + simulation_progress.headers["Retry-After"] + " seconds")
-            sleep(float(simulation_progress.headers["Retry-After"]))
+            print("Sleeping for " + self.simulation_progress.headers["Retry-After"] + " seconds")
+            sleep(float(self.simulation_progress.headers["Retry-After"]))
 
         print("--Alpha done simulationg, getting alpha details--")
+        metric = self.visualize_reponse()
+        print("Performent: ",  metric)
 
-        #Lay thong tin alpha
-        print("simulation_progress.json(): \n",simulation_progress.json())
-        alpha_id = simulation_progress.json().get("alpha")
-        print("\nAlpha: \n", simulation_progress.json().get('regular'))
-        print("\nAlpha ID: ",alpha_id)
+    def visualize_reponse(self):
+        #Lay thong tin alpha    
+        # print("simulation_progress.json(): \n",self.simulation_progress.json())
+        alpha_id = self.simulation_progress.json().get("alpha")
+        print("\nAlpha: \n", self.simulation_progress.json().get('regular'))
+        # print("\nAlpha ID: ",alpha_id)
 
-        if simulation_progress.json().get('status') != "ERROR":
+        if self.simulation_progress.json().get('status') != "ERROR":
             alpha = self.session.get("https://api.worldquantbrain.com/alphas/" + alpha_id)
 
             json_alpha = json.loads(alpha.text)
-            json_alpha_str = json.dumps(json_alpha, indent=2)
-            print(json_alpha_str)
+            # json_alpha_str = json.dumps(json_alpha, indent=2)
+            # print(json_alpha_str)
+            metric = json_alpha.get('is')
+            del metric["checks"]
         else:
+            metric = {}
             print("--ERROR--")
-
+        return metric
+    
 if __name__ == '__main__':
     simAPI = Simulate_API()
     alpha = 'rank(close)'
