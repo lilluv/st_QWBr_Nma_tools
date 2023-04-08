@@ -18,7 +18,7 @@ class Simulate_API():
                 "universe": "TOP3000",
                 "delay": 1,
                 "decay": 4,
-                "neutralization": "MARKET",
+                "neutralization": "NONE",
                 "truncation": 0.08,
                 "pasteurization": "ON",
                 "unitHandling": "VERIFY",
@@ -73,21 +73,24 @@ class Simulate_API():
             print("Sleeping for " + simulation_progress.headers["Retry-After"] + " seconds")
             sleep(float(simulation_progress.headers["Retry-After"]))
 
-        print("Alpha done simulationg, getting alpha details")
+        print("--Alpha done simulationg, getting alpha details--")
 
         #Lay thong tin alpha
-        print("simulation_progress.json()",simulation_progress.json())
+        print("simulation_progress.json(): \n",simulation_progress.json())
         alpha_id = simulation_progress.json().get("alpha")
-        # print(simulation_progress.json())
-        print(alpha_id)
+        print("\nAlpha: \n", simulation_progress.json().get('regular'))
+        print("\nAlpha ID: ",alpha_id)
 
-        alpha = self.session.get("https://api.worldquantbrain.com/alphas/" + alpha_id)
+        if simulation_progress.json().get('status') != "ERROR":
+            alpha = self.session.get("https://api.worldquantbrain.com/alphas/" + alpha_id)
 
-        json_alpha = json.loads(alpha.text)
-        json_alpha_str = json.dumps(json_alpha, indent=2)
-        print(json_alpha_str)
-    
+            json_alpha = json.loads(alpha.text)
+            json_alpha_str = json.dumps(json_alpha, indent=2)
+            print(json_alpha_str)
+        else:
+            print("--ERROR--")
+
 if __name__ == '__main__':
     simAPI = Simulate_API()
-    alpha = 'weight'
+    alpha = 'rank(close)'
     simAPI.simulate(alpha)
