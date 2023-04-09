@@ -1,3 +1,7 @@
 account:
   user_name: 'vthn.209@gmail.com'
   pwd: 'rkZQIwZVhgbIT'
+
+dataset:
+  path: "./data/Data_Fields.xlsx"
+  price_volume: 'Price Volume Data for Equity'

@@ -1,3 +1,5 @@
 selenium
 chromedriver_autoinstaller
 pyaml
+openpyxl
+tqdm
