@@ -14,11 +14,11 @@ config:
   "settings":
       "instrumentType": "EQUITY"
       "region": "USA"
-      "universe": "TOP3000"
+      "universe": "TOP200"
       "delay": 1
-      "decay": 4
+      "decay": 5
       "neutralization": "NONE"
-      "truncation": 0.08
+      "truncation": 0.06
       "pasteurization": "ON"
       "unitHandling": "VERIFY"
       "nanHandling": "OFF"

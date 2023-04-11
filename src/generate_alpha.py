@@ -25,8 +25,9 @@ class Alpha_Generator():
                 alpha = "scale({0})".format(alpha)
             list_processed_alpha.append(alpha)
         f_alpha = ','.join(list_processed_alpha)
-
-        return "add({0})".format(f_alpha)
+        sum_alpha =  "add({0})".format(f_alpha)
+        response, success = self.simAPI.simulate(sum_alpha)
+        return sum_alpha, response, success
 
     def generate(self, formula = "{0}+{1}", num_variable=2, dataset = "price_volume"):
         # Read Data Fields

@@ -13,17 +13,17 @@ def _crawler(opt):
 
 def _combine_alpha(opt):
     alpha_generator = Alpha_Generator()
-    simAPI = Simulate_API()
     list_alpha = [
             "rank(-ts_delta(cap,2))",
-            "-(low-close)^3*(open^7) / (low-high)^3 / (close^7)",
-            # "adv20/sharesout+returns",
+            "(low-close)^3*(open^7) / (low-high)^3 / (close^7)",
+            "adv20/sharesout+returns",
             "rank(trade_when(adv20>volume, -returns, -1))"
             ]
     field_neutralization = opt.neutralize
-    alpha = alpha_generator.combine_alpha(list_alpha, field_neutralization=field_neutralization)
-    metric, _ = simAPI.simulate(alpha)
-    print(metric)
+    alpha, metric, success = alpha_generator.combine_alpha(list_alpha, field_neutralization=field_neutralization)
+    print("\n Alpha:\n \t", alpha)
+    print(">--{0}--<".format("PASS" if success else "FAIL"))
+    print("Performent: ", metric)
 
 def _generate_alpha(opt):
     alpha_generator = Alpha_Generator()
