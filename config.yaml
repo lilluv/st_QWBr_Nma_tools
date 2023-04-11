@@ -1,7 +1,30 @@
 account:
-  user_name: 'vthn.209@gmail.com'
-  pwd: 'rkZQIwZVhgbIT'
+  # user_name: 'vthn.209@gmail.com'
+  # pwd: 'rkZQIwZVhgbIT'
+  user_name: 'dohainam152@gmail.com'
+  pwd: 'DHN15022000'
 
 dataset:
   path: "./data/Data_Fields.xlsx"
   price_volume: 'Price Volume Data for Equity'
+  fundamental_datasets: 'Company Fundamental Data for Eq'
+
+config:
+  "type": "REGULAR"
+  "settings":
+      "instrumentType": "EQUITY"
+      "region": "USA"
+      "universe": "TOP3000"
+      "delay": 1
+      "decay": 4
+      "neutralization": "NONE"
+      "truncation": 0.08
+      "pasteurization": "ON"
+      "unitHandling": "VERIFY"
+      "nanHandling": "OFF"
+      # "selectionLimit": ,
+      "language": "FASTEXPR"
+      "visualization": False
+  "regular": "rank(assets/close)"
+  # "combo": ,
+  # "selection": ,

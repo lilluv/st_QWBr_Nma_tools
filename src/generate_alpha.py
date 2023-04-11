@@ -2,8 +2,8 @@ import random
 from .test_api import Simulate_API
 from utils import load_params
 import pandas as pd
-# from itertools import combinations
-from itertools import permutations
+from itertools import combinations
+# from itertools import permutations
 from tqdm import tqdm 
 import csv
 
@@ -13,19 +13,19 @@ class Alpha_Generator():
         self.simAPI = Simulate_API()
 
     def combine_alpha(self, list_alpha, field_neutralization = 'industry'):
-        n_alpha = len(list_alpha)
-        random_weight = random.sample(range(1, 10), n_alpha)
+        # random_weight = random.sample(range(1, 10), len(list_alpha))
         # w_alpha = [x/sum(random_weight) for x in random_weight ]
-        w_alpha = random_weight
+        # w_alpha = random_weight
         
         list_processed_alpha = []
         for idx, alpha in enumerate(list_alpha):
-            # alpha = "scale(group_neutralize({0}, {1})) * {2}".format(alpha, field_neutralization, w_alpha[idx])
-            alpha = "scale(group_neutralize({0}, {1}))".format(alpha, field_neutralization)
+            if field_neutralization:
+                alpha = "scale(group_neutralize({0}, {1}))".format(alpha, field_neutralization)
+            else:
+                alpha = "scale({0})".format(alpha)
             list_processed_alpha.append(alpha)
-
         f_alpha = ','.join(list_processed_alpha)
-        # print(f_alpha)
+
         return "add({0})".format(f_alpha)
 
     def generate(self, formula = "{0}+{1}", num_variable=2, dataset = "price_volume"):
@@ -44,8 +44,8 @@ class Alpha_Generator():
         with open('test.csv', 'w') as output_file:
             dict_writer = csv.writer(output_file)
             dict_writer.writerow(Keys)
-            # dict_writer.writeheader()
-            list_Permutations = list(permutations(List_field_delay1, num_variable))
+            # list_Permutations = list(permutations(List_field_delay0, num_variable)) #List_field_delay1
+            list_Permutations = list(combinations([*List_field_delay0,*List_field_delay1], num_variable))
             for permutation in tqdm(list_Permutations):
                 alpha = formula.format(*permutation)
                 response, success = self.simAPI.simulate(alpha)

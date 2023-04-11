@@ -7,33 +7,21 @@ from time import sleep
     
 class Simulate_API():
     def __init__(self):
-        account = load_params()['account']
+        params = load_params()
+        account = params['account']
         self.session = self.login(account)
-
-        self.simulation_data = {
-            "type": "REGULAR",
-            "settings": {
-                "instrumentType": "EQUITY",
-                "region": "USA",
-                "universe": "TOP3000",
-                "delay": 1,
-                "decay": 4,
-                "neutralization": "NONE",
-                "truncation": 0.08,
-                "pasteurization": "ON",
-                "unitHandling": "VERIFY",
-                "nanHandling": "OFF",
-                # "selectionLimit": ,
-                "language": "FASTEXPR",
-                "visualization": False,
-            },
-            # "regular": "rank(" + str(A[i]) "/" + str(B[j]) + ")",
-            "regular": "rank(assets/close)"
-            # "combo": ,
-            # "selection": ,
-        }
+        self.simulation_data = params['config']
 
     def login(self, account:dict): 
+        """Log in Script 
+
+        Args:
+            account (dict): Contain login information
+                - user_name: User name
+                - pwd: Password
+        Returns:
+            s: session
+        """        
         s = requests.Session() #Tao request
         s.auth = (account['user_name'], account['pwd'])
         #Login
@@ -51,9 +39,18 @@ class Simulate_API():
                 print("incorrect email and password")
         return s
     
-    def simulate(self, alpha= None):
+    def simulate(self, alpha: str=None):     
+        """Simulate Alpha to get Performent
+
+        Args:
+            alpha (str, optional): Alpha. Defaults to None.
+
+        Returns:
+            tuple: 
+                - metric (dict): perform metric (sharpe, longcount, ...)
+                - success (bool): Accept Request
+        """        
         #Khoi tao alpha de simulate
-        # self.simulation_data.update({"delay": delay}) 
         if alpha:
             self.simulation_data.update({"regular": str(alpha)})
         #Gui request den server
@@ -61,36 +58,26 @@ class Simulate_API():
             "https://api.worldquantbrain.com/simulations", json=self.simulation_data
         )
 
-        # print("Simulation response: " + str(simulation_response))
-        # print(simulation_response.text)
-
         simulation_progress_url = simulation_response.headers["Location"]
-        finished = False
 
         while True:
             self.simulation_progress = self.session.get(simulation_progress_url)
             if self.simulation_progress.headers.get("Retry-After", 0) == 0:
                 break
-            # print("Sleeping for " + self.simulation_progress.headers["Retry-After"] + " seconds")
             sleep(float(self.simulation_progress.headers["Retry-After"]))
-
         # print("--Alpha done simulationg, getting alpha details--")
         metric, success = self.visualize_reponse()
-        # print("Performent: ",  metric)
         return metric, success
 
     def visualize_reponse(self):
         #Lay thong tin alpha    
-        # print("simulation_progress.json(): \n",self.simulation_progress.json())
         alpha_id = self.simulation_progress.json().get("alpha")
-        # print("\nAlpha: \n", self.simulation_progress.json().get('regular'))
-
+        metric = {}
+        if alpha_id is None:
+            return metric, False
         if self.simulation_progress.json().get('status') != "ERROR":
             alpha = self.session.get("https://api.worldquantbrain.com/alphas/" + alpha_id)
-
             json_alpha = json.loads(alpha.text)
-            # json_alpha_str = json.dumps(json_alpha, indent=2)
-            # print(json_alpha_str)
             metric = json_alpha.get('is')
             for is_check in metric['checks']:
                 if is_check['result'] == 'FAIL':
@@ -99,12 +86,10 @@ class Simulate_API():
             else:
                 metric['Test'] = 'PASS'
             del metric["checks"]
-            success = True
+            return metric, True
         else:
-            metric = {}
-            success = False
             # print("--ERROR--")
-        return metric, success
+            return metric, False
     
 if __name__ == '__main__':
     simAPI = Simulate_API()
