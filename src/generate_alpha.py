@@ -35,18 +35,19 @@ class Alpha_Generator():
         dfs = pd.read_excel(data_config["path"], sheet_name=data_config[dataset])
         List_field_delay0 = []
         List_field_delay1 = []
-        for field, delay in zip(dfs['Field'], dfs['Delay']):
-            if delay == 0:
-                List_field_delay0.append(field)
-            else:
-                List_field_delay1.append(field)
+        # for field, delay in zip(dfs['Field'], dfs['Delay']):
+        #     if delay == 0:
+        #         List_field_delay0.append(field)
+        #     else:
+        #         List_field_delay1.append(field)
         Keys = ['Alpha', 'PnL', 'longCount', 'shortCount', 'turnover', 'Returns', 'Drawdown', 'Margin', 'Fitness', 'Sharpe', 'Test']
         # list_variable = list(combinations(List_field_delay0, num_variable))
         with open('test.csv', 'w') as output_file:
             dict_writer = csv.writer(output_file)
             dict_writer.writerow(Keys)
             # list_Permutations = list(permutations(List_field_delay0, num_variable)) #List_field_delay1
-            list_Permutations = list(combinations([*List_field_delay0,*List_field_delay1], num_variable))
+            # list_Permutations = list(combinations([*List_field_delay0,*List_field_delay1], num_variable))
+            list_Permutations = list(combinations(dfs['Field'], num_variable))
             for permutation in tqdm(list_Permutations):
                 alpha = formula.format(*permutation)
                 response, success = self.simAPI.simulate(alpha)

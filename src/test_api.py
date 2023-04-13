@@ -58,16 +58,18 @@ class Simulate_API():
             "https://api.worldquantbrain.com/simulations", json=self.simulation_data
         )
 
-        simulation_progress_url = simulation_response.headers["Location"]
-
-        while True:
-            self.simulation_progress = self.session.get(simulation_progress_url)
-            if self.simulation_progress.headers.get("Retry-After", 0) == 0:
-                break
-            sleep(float(self.simulation_progress.headers["Retry-After"]))
-        # print("--Alpha done simulationg, getting alpha details--")
-        metric, success = self.visualize_reponse()
-        return metric, success
+        simulation_progress_url = simulation_response.headers.get("Location")
+        if simulation_progress_url:
+            while True:
+                self.simulation_progress = self.session.get(simulation_progress_url)
+                if self.simulation_progress.headers.get("Retry-After", 0) == 0:
+                    break
+                sleep(float(self.simulation_progress.headers["Retry-After"]))
+            # print("--Alpha done simulationg, getting alpha details--")
+            metric, success = self.visualize_reponse()
+            return metric, success
+        else:
+            return {}, False
 
     def visualize_reponse(self):
         #Lay thong tin alpha    
