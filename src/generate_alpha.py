@@ -33,8 +33,8 @@ class Alpha_Generator():
         # Read Data Fields
         data_config = self.params.get("dataset")
         dfs = pd.read_excel(data_config["path"], sheet_name=data_config[dataset])
-        List_field_delay0 = []
-        List_field_delay1 = []
+        # List_field_delay0 = []
+        # List_field_delay1 = []
         # for field, delay in zip(dfs['Field'], dfs['Delay']):
         #     if delay == 0:
         #         List_field_delay0.append(field)

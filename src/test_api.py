@@ -4,6 +4,14 @@ import csv
 from utils import load_params
 from urllib.parse import urljoin
 from time import sleep
+import logging
+from datetime import datetime
+
+logging.basicConfig(filename="API_Response.log",
+                    format='%(asctime)s %(message)s',
+                    filemode='w')
+# Creating an object
+logger = logging.getLogger()
     
 class Simulate_API():
     def __init__(self):
@@ -11,6 +19,7 @@ class Simulate_API():
         account = params['account']
         self.session = self.login(account)
         self.simulation_data = params['config']
+        logger.info("Start Simulator API: ", datetime.now())
 
     def login(self, account:dict): 
         """Log in Script 
@@ -69,6 +78,7 @@ class Simulate_API():
             metric, success = self.visualize_reponse()
             return metric, success
         else:
+            logger.warning("Simulation Response cant get \"Location\": ", alpha)
             return {}, False
 
     def visualize_reponse(self):
@@ -76,6 +86,7 @@ class Simulate_API():
         alpha_id = self.simulation_progress.json().get("alpha")
         metric = {}
         if alpha_id is None:
+            logger.error("--Simulate ERROR--\n"+ self.simulation_progress.json().get('message'))
             return metric, False
         if self.simulation_progress.json().get('status') != "ERROR":
             alpha = self.session.get("https://api.worldquantbrain.com/alphas/" + alpha_id)
@@ -91,6 +102,7 @@ class Simulate_API():
             return metric, True
         else:
             # print("--ERROR--")
+            logger.error("--Simulate ERROR--\n", self.simulation_progress.json().get('message'))
             return metric, False
     
 if __name__ == '__main__':

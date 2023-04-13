@@ -53,7 +53,7 @@ class WorldQuantTool(object):
         args = generate_parser.parse_args(sys.argv[2:])
 
         alpha_generator = Alpha_Generator()
-        formula_template = "-ts_zscore({0}/{1}, 30)" if not args.formula else args.formula
+        formula_template = "-ts_corr({0}, {1}, 5)" if not args.formula else args.formula
         n_variable = 2 if not args.nvar else args.nvar
         alpha_generator.generate(formula=formula_template, num_variable=n_variable, dataset=args.dataset)
 
