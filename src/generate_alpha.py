@@ -12,11 +12,7 @@ class Alpha_Generator():
         self.params = load_params()
         self.simAPI = Simulate_API()
 
-    def combine_alpha(self, list_alpha, field_neutralization = 'industry'):
-        # random_weight = random.sample(range(1, 10), len(list_alpha))
-        # w_alpha = [x/sum(random_weight) for x in random_weight ]
-        # w_alpha = random_weight
-        
+    def combine_alpha(self, list_alpha, field_neutralization = 'industry'):       
         list_processed_alpha = []
         for idx, alpha in enumerate(list_alpha):
             if field_neutralization:
@@ -33,24 +29,23 @@ class Alpha_Generator():
         # Read Data Fields
         data_config = self.params.get("dataset")
         dfs = pd.read_excel(data_config["path"], sheet_name=data_config[dataset])
-        # List_field_delay0 = []
-        # List_field_delay1 = []
-        # for field, delay in zip(dfs['Field'], dfs['Delay']):
-        #     if delay == 0:
-        #         List_field_delay0.append(field)
-        #     else:
-        #         List_field_delay1.append(field)
+        List_field = []
+        region = self.params['config']['settings']['region']
+        for field, delay, coverage_region in zip(dfs['Field'], dfs['Delay'], dfs[region]):
+            if coverage_region != '-':
+                if delay == self.params['config']['settings']['delay']:
+                    List_field.append(field)
         Keys = ['Alpha', 'PnL', 'longCount', 'shortCount', 'turnover', 'Returns', 'Drawdown', 'Margin', 'Fitness', 'Sharpe', 'Test']
         # list_variable = list(combinations(List_field_delay0, num_variable))
         with open('test.csv', 'w') as output_file:
             dict_writer = csv.writer(output_file)
             dict_writer.writerow(Keys)
-            # list_Permutations = list(permutations(List_field_delay0, num_variable)) #List_field_delay1
-            # list_Permutations = list(combinations([*List_field_delay0,*List_field_delay1], num_variable))
-            list_Permutations = list(combinations(dfs['Field'], num_variable))
+            list_Permutations = list(combinations(List_field, num_variable))
+            # list_Permutations = list(combinations(dfs['Field'], num_variable))
             for permutation in tqdm(list_Permutations):
                 alpha = formula.format(*permutation)
                 response, success = self.simAPI.simulate(alpha)
-                if success:
+                # if success:
+                if success and response.get('Test') == 'PASS':
                     data_list = [alpha, response.get('pnl'), response.get('longCount'), response.get('shortCount'), response.get('turnover'), response.get('returns'), response.get('drawdown'), response.get('margin'), response.get('fitness'), response.get('sharpe'), response.get('Test')]
                     dict_writer.writerow(data_list)

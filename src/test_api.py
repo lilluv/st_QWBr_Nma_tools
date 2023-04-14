@@ -86,7 +86,7 @@ class Simulate_API():
         alpha_id = self.simulation_progress.json().get("alpha")
         metric = {}
         if alpha_id is None:
-            logger.error("--Simulate ERROR--\n"+ self.simulation_progress.json().get('message'))
+            logger.error("--Simulate ERROR--\n"+ self.simulation_progress.json().get('message', ''))
             return metric, False
         if self.simulation_progress.json().get('status') != "ERROR":
             alpha = self.session.get("https://api.worldquantbrain.com/alphas/" + alpha_id)
@@ -102,7 +102,7 @@ class Simulate_API():
             return metric, True
         else:
             # print("--ERROR--")
-            logger.error("--Simulate ERROR--\n", self.simulation_progress.json().get('message'))
+            logger.error("--Simulate ERROR--\n", self.simulation_progress.json().get('message', ''))
             return metric, False
     
 if __name__ == '__main__':
