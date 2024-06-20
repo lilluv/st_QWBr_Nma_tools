@@ -1,8 +1,8 @@
 account:
   # user_name: 'vthn.209@gmail.com'
   # pwd: 'rkZQIwZVhgbIT'
-  user_name: 'dohainam152@gmail.com'
-  pwd: 'DHN15022000'
+  user_name: 'username'
+  pwd: 'password'
 
 dataset:
   path: "./data/Data_Fields.xlsx"
